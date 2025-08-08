@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { formatPrice, formatDate } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 import { Package, User, DollarSign, Eye } from 'lucide-react'
 import Link from 'next/link'
 
@@ -32,7 +32,6 @@ interface Listing {
 export default function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
 
   const fetchListings = async () => {
     try {
@@ -40,11 +39,9 @@ export default function ListingsPage() {
       if (response.ok) {
         const data = await response.json()
         setListings(data.listings)
-      } else {
-        setError('Failed to fetch listings')
       }
-    } catch (error) {
-      setError('An error occurred while fetching listings')
+    } catch {
+      // Handle error silently for now
     } finally {
       setLoading(false)
     }
@@ -61,21 +58,6 @@ export default function ListingsPage() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading listings...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <p className="text-red-600">{error}</p>
-            <Button onClick={fetchListings} className="mt-4">
-              Try Again
-            </Button>
           </div>
         </div>
       </div>
