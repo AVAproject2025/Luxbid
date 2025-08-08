@@ -10,9 +10,7 @@ import { formatPrice, formatDate } from '@/lib/utils'
 import { 
   Package, 
   User, 
-  DollarSign, 
-  MessageSquare,
-  Eye
+  DollarSign
 } from 'lucide-react'
 
 interface Listing {
@@ -167,7 +165,6 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
   const images = listing.images ? JSON.parse(listing.images) : []
   const isSeller = session?.user?.id === listing.seller.id
   const userOffer = offers.find(offer => offer.buyer.id === session?.user?.id)
-  const acceptedOffer = offers.find(offer => offer.status === 'ACCEPTED')
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -283,7 +280,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                       <Input
                         type="number"
                         value={offerAmount}
-                        onChange={(e) => setOfferAmount(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOfferAmount(e.target.value)}
                         placeholder="0.00"
                         min="0"
                         step="0.01"
@@ -296,7 +293,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                       </label>
                       <Textarea
                         value={offerMessage}
-                        onChange={(e) => setOfferMessage(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setOfferMessage(e.target.value)}
                         placeholder="Add a message to your offer..."
                         rows={3}
                       />
