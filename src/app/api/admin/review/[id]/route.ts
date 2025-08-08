@@ -18,7 +18,7 @@ export async function PATCH(
         status: action === 'approve' ? 'approved' : 'rejected'
       }
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to review item' },
       { status: 500 }

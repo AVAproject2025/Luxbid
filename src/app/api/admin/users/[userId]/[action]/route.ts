@@ -17,7 +17,7 @@ export async function PATCH(
         status: action === 'ban' ? 'banned' : 'unbanned'
       }
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to update user status' },
       { status: 500 }

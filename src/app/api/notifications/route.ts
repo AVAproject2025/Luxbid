@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -14,18 +14,16 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const userId = session.user.id
-
     const notifications = await prisma.notification.findMany({
-      where: { userId },
+      where: {
+        userId: session.user.id
+      },
       orderBy: {
         createdAt: 'desc'
-      },
-      take: 50
+      }
     })
 
     return NextResponse.json({ notifications })
-
   } catch (error) {
     console.error('Error fetching notifications:', error)
     return NextResponse.json(
@@ -46,27 +44,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { title, message, type = 'INFO', userId } = body
-
-    if (!title || !message || !userId) {
-      return NextResponse.json(
-        { error: 'Title, message, and userId are required' },
-        { status: 400 }
-      )
-    }
+    const { title, message, type = 'INFO' } = await request.json()
 
     const notification = await prisma.notification.create({
       data: {
         title,
         message,
         type,
-        userId,
+        userId: session.user.id
       }
     })
 
-    return NextResponse.json({ notification }, { status: 201 })
-
+    return NextResponse.json({ notification })
   } catch (error) {
     console.error('Error creating notification:', error)
     return NextResponse.json(

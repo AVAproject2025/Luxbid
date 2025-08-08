@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -14,30 +14,27 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const userId = session.user.id
-
     const transactions = await prisma.transaction.findMany({
-      where: { userId },
-      select: {
-        id: true,
-        type: true,
-        amount: true,
-        status: true,
-        description: true,
-        createdAt: true
+      where: { userId: session.user.id },
+      include: {
+        listing: {
+          select: {
+            id: true,
+            title: true
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc'
       },
-      take: 5
+      take: 10
     })
 
     return NextResponse.json({ transactions })
-
   } catch (error) {
-    console.error('Error fetching recent transactions:', error)
+    console.error('Error fetching transactions:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch recent transactions' },
+      { error: 'Failed to fetch transactions' },
       { status: 500 }
     )
   }

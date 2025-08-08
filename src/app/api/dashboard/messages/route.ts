@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -14,32 +14,29 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const userId = session.user.id
-
     const messages = await prisma.message.findMany({
       where: {
         OR: [
-          {
-            listing: {
-              sellerId: userId
-            }
-          },
-          {
-            senderId: userId
-          }
+          { senderId: session.user.id },
+          { receiverId: session.user.id }
         ]
       },
-      select: {
-        id: true,
-        content: true,
-        createdAt: true,
+      include: {
         sender: {
           select: {
+            id: true,
+            name: true
+          }
+        },
+        receiver: {
+          select: {
+            id: true,
             name: true
           }
         },
         listing: {
           select: {
+            id: true,
             title: true
           }
         }
@@ -47,15 +44,14 @@ export async function GET(request: NextRequest) {
       orderBy: {
         createdAt: 'desc'
       },
-      take: 5
+      take: 10
     })
 
     return NextResponse.json({ messages })
-
   } catch (error) {
-    console.error('Error fetching recent messages:', error)
+    console.error('Error fetching messages:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch recent messages' },
+      { error: 'Failed to fetch messages' },
       { status: 500 }
     )
   }

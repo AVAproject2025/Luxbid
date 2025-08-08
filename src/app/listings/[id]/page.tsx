@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -43,7 +42,7 @@ interface Offer {
   id: string
   amount: number
   message?: string
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED'
+  status: string
   createdAt: string
   buyer: {
     id: string
@@ -52,7 +51,6 @@ interface Offer {
 }
 
 export default function ListingDetailPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
   const { session, isAuthenticated } = useAuth()
   const [listing, setListing] = useState<Listing | null>(null)
   const [offers, setOffers] = useState<Offer[]>([])
@@ -61,11 +59,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
   const [offerAmount, setOfferAmount] = useState('')
   const [offerMessage, setOfferMessage] = useState('')
 
-  useEffect(() => {
-    fetchListingData()
-  }, [params.id])
-
-  const fetchListingData = async () => {
+  const fetchListingData = useCallback(async () => {
     try {
       const [listingRes, offersRes] = await Promise.all([
         fetch(`/api/listings/${params.id}`),
@@ -86,41 +80,37 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id])
+
+  useEffect(() => {
+    fetchListingData()
+  }, [fetchListingData])
 
   const handleSubmitOffer = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!isAuthenticated || !listing) return
+    if (!isAuthenticated) return
 
-    const amount = parseFloat(offerAmount)
-    if (isNaN(amount) || amount <= 0) {
-      alert('Please enter a valid amount')
-      return
-    }
-
+    setSubmittingOffer(true)
     try {
-      setSubmittingOffer(true)
       const response = await fetch('/api/offers', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          listingId: listing.id,
-          amount,
-          message: offerMessage.trim() || undefined,
+          listingId: params.id,
+          amount: parseFloat(offerAmount),
+          message: offerMessage || undefined,
         }),
       })
 
       if (response.ok) {
-        const data = await response.json()
-        setOffers(prev => [data.offer, ...prev])
         setOfferAmount('')
         setOfferMessage('')
-        alert('Offer submitted successfully!')
+        fetchListingData() // Refresh data
       } else {
-        const error = await response.json()
-        alert(error.error || 'Failed to submit offer')
+        const data = await response.json()
+        alert(data.error || 'Failed to submit offer')
       }
     } catch (error) {
       console.error('Error submitting offer:', error)
@@ -131,19 +121,16 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
   }
 
   const handleAcceptOffer = async (offerId: string) => {
-    if (!confirm('Are you sure you want to accept this offer?')) return
-
     try {
       const response = await fetch(`/api/offers/${offerId}/accept`, {
         method: 'PATCH',
       })
 
       if (response.ok) {
-        alert('Offer accepted successfully!')
         fetchListingData() // Refresh data
       } else {
-        const error = await response.json()
-        alert(error.error || 'Failed to accept offer')
+        const data = await response.json()
+        alert(data.error || 'Failed to accept offer')
       }
     } catch (error) {
       console.error('Error accepting offer:', error)
@@ -259,52 +246,45 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                   <p className="text-gray-900">{listing.description}</p>
                 </div>
 
-                <div className="border-t pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-semibold text-gray-900">Asking Price</span>
-                    <span className="text-2xl font-bold text-blue-600">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-green-600" />
+                    <span className="text-2xl font-bold text-green-600">
                       {formatPrice(listing.askingPrice)}
                     </span>
                   </div>
-                </div>
-
-                {listing.status === 'SOLD' && acceptedOffer && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="font-medium text-green-800">Sold for {formatPrice(acceptedOffer.amount)}</span>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-gray-500">
+                      {listing._count.offers} offers
+                    </span>
                   </div>
-                )}
+                </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Offers Section */}
           <div className="space-y-6">
-            {/* Make Offer */}
             {isAuthenticated && !isSeller && listing.status === 'ACTIVE' && !userOffer && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <DollarSign className="w-5 h-5" />
-                    Make a Private Offer
-                  </CardTitle>
+                  <CardTitle>Make an Offer</CardTitle>
                   <CardDescription>
-                    Submit a private offer to the seller. Only the seller will see your offer.
+                    Submit a private offer for this item
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmitOffer} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Offer Amount
+                        Offer Amount *
                       </label>
                       <Input
                         type="number"
                         value={offerAmount}
                         onChange={(e) => setOfferAmount(e.target.value)}
-                        placeholder="Enter your offer amount"
+                        placeholder="0.00"
                         min="0"
                         step="0.01"
                         required
@@ -323,7 +303,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                     </div>
                     <Button
                       type="submit"
-                      disabled={submittingOffer || !offerAmount}
+                      disabled={submittingOffer}
                       className="w-full"
                     >
                       {submittingOffer ? 'Submitting...' : 'Submit Offer'}
@@ -333,98 +313,105 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
               </Card>
             )}
 
-            {/* User's Offer */}
-            {userOffer && (
+            {isSeller && offers.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Eye className="w-5 h-5" />
-                    Your Offer
-                  </CardTitle>
+                  <CardTitle>Offers Received</CardTitle>
+                  <CardDescription>
+                    {offers.length} offer{offers.length !== 1 ? 's' : ''} received
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="font-medium">Amount:</span>
-                      <span className="font-bold text-blue-600">{formatPrice(userOffer.amount)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Status:</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        userOffer.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                        userOffer.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {userOffer.status}
-                      </span>
-                    </div>
-                    {userOffer.message && (
-                      <div>
-                        <span className="font-medium">Message:</span>
-                        <p className="text-gray-600 mt-1">{userOffer.message}</p>
+                  <div className="space-y-4">
+                    {offers.map((offer) => (
+                      <div
+                        key={offer.id}
+                        className={`p-4 border rounded-lg ${
+                          offer.status === 'ACCEPTED'
+                            ? 'border-green-200 bg-green-50'
+                            : 'border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4 text-gray-500" />
+                            <span className="font-medium">{offer.buyer.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="w-4 h-4 text-green-600" />
+                            <span className="font-bold text-green-600">
+                              {formatPrice(offer.amount)}
+                            </span>
+                          </div>
+                        </div>
+                        {offer.message && (
+                          <p className="text-sm text-gray-600 mb-2">
+                            {offer.message}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">
+                            {formatDate(new Date(offer.createdAt))}
+                          </span>
+                          {offer.status === 'PENDING' && (
+                            <Button
+                              size="sm"
+                              onClick={() => handleAcceptOffer(offer.id)}
+                            >
+                              Accept Offer
+                            </Button>
+                          )}
+                          {offer.status === 'ACCEPTED' && (
+                            <span className="text-sm font-medium text-green-600">
+                              Accepted
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    )}
+                    ))}
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Seller's View - All Offers */}
-            {isSeller && listing.status === 'ACTIVE' && (
+            {userOffer && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5" />
-                    Private Offers ({offers.filter(o => o.status === 'PENDING').length})
-                  </CardTitle>
-                  <CardDescription>
-                    Review and accept offers from buyers
-                  </CardDescription>
+                  <CardTitle>Your Offer</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {offers.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No offers yet</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {offers.map((offer) => (
-                        <div key={offer.id} className="border rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <User className="w-4 h-4 text-gray-500" />
-                              <span className="font-medium">{offer.buyer.name}</span>
-                            </div>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              offer.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                              offer.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
-                              {offer.status}
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <p className="font-bold text-lg">{formatPrice(offer.amount)}</p>
-                              {offer.message && (
-                                <p className="text-sm text-gray-600 mt-1">{offer.message}</p>
-                              )}
-                              <p className="text-xs text-gray-500 mt-1">
-                                {formatDate(new Date(offer.createdAt))}
-                              </p>
-                            </div>
-                            {offer.status === 'PENDING' && (
-                              <Button
-                                onClick={() => handleAcceptOffer(offer.id)}
-                                size="sm"
-                                className="bg-green-600 hover:bg-green-700"
-                              >
-                                Accept Offer
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                  <div className={`p-4 border rounded-lg ${
+                    userOffer.status === 'ACCEPTED'
+                      ? 'border-green-200 bg-green-50'
+                      : 'border-gray-200'
+                  }`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">Your Offer</span>
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="w-4 h-4 text-green-600" />
+                        <span className="font-bold text-green-600">
+                          {formatPrice(userOffer.amount)}
+                        </span>
+                      </div>
                     </div>
-                  )}
+                    {userOffer.message && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        {userOffer.message}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">
+                        {formatDate(new Date(userOffer.createdAt))}
+                      </span>
+                      <span className={`text-sm font-medium ${
+                        userOffer.status === 'ACCEPTED'
+                          ? 'text-green-600'
+                          : 'text-yellow-600'
+                      }`}>
+                        {userOffer.status === 'ACCEPTED' ? 'Accepted' : 'Pending'}
+                      </span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}

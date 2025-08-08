@@ -10,7 +10,7 @@ const createReviewSchema = z.object({
   comment: z.string().optional(),
 })
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -71,57 +71,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { listingId, rating, comment } = createReviewSchema.parse(body)
+    const validatedData = createReviewSchema.parse(body)
 
-    // Check if listing exists and user has purchased it
-    const listing = await prisma.listing.findUnique({
-      where: { id: listingId },
-      include: {
-        payments: {
-          where: {
-            buyerId: session.user.id,
-            status: 'COMPLETED'
-          }
-        }
-      }
-    })
-
-    if (!listing) {
-      return NextResponse.json(
-        { error: 'Listing not found' },
-        { status: 404 }
-      )
-    }
-
-    if (listing.payments.length === 0) {
-      return NextResponse.json(
-        { error: 'You can only review items you have purchased' },
-        { status: 403 }
-      )
-    }
-
-    // Check if user already reviewed this listing
-    const existingReview = await prisma.review.findFirst({
-      where: {
-        listingId,
-        reviewerId: session.user.id
-      }
-    })
-
-    if (existingReview) {
-      return NextResponse.json(
-        { error: 'You have already reviewed this listing' },
-        { status: 400 }
-      )
-    }
-
-    // Create review
     const review = await prisma.review.create({
       data: {
-        rating,
-        comment,
+        rating: validatedData.rating,
+        comment: validatedData.comment,
         reviewerId: session.user.id,
-        listingId,
+        listingId: validatedData.listingId
       },
       include: {
         reviewer: {
@@ -139,21 +96,12 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({
-      review: {
-        id: review.id,
-        rating: review.rating,
-        comment: review.comment,
-        createdAt: review.createdAt,
-        reviewer: review.reviewer,
-        listing: review.listing
-      }
-    }, { status: 201 })
+    return NextResponse.json({ review }, { status: 201 })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.issues },
+        { error: 'Invalid data', details: error.errors },
         { status: 400 }
       )
     }

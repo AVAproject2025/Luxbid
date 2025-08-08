@@ -1,62 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    // For now, we'll return mock data since we haven't implemented the flagging system yet
-    // In a real implementation, you'd have a FlaggedItem model in your schema
-    
-    const mockFlaggedItems = [
-      {
+export async function GET() {
+  // Mock data for now
+  const flaggedItems = [
+    {
+      id: '1',
+      type: 'LISTING',
+      reason: 'Inappropriate content',
+      status: 'PENDING',
+      createdAt: new Date().toISOString(),
+      item: {
         id: '1',
-        type: 'LISTING',
-        reason: 'Inappropriate content',
-        status: 'PENDING',
-        createdAt: new Date().toISOString(),
-        item: {
-          id: 'listing-1',
-          title: 'Rolex Submariner Watch'
-        },
-        reporter: {
-          name: 'John Doe',
-          email: 'john@example.com'
-        }
-      },
-      {
-        id: '2',
-        type: 'MESSAGE',
-        reason: 'Spam',
-        status: 'PENDING',
-        createdAt: new Date().toISOString(),
-        item: {
-          id: 'message-1',
-          content: 'Check out this amazing deal!'
-        },
-        reporter: {
-          name: 'Jane Smith',
-          email: 'jane@example.com'
-        }
+        title: 'Fake Rolex Watch',
+        seller: 'John Doe'
       }
-    ]
+    },
+    {
+      id: '2',
+      type: 'USER',
+      reason: 'Suspicious activity',
+      status: 'REVIEWED',
+      createdAt: new Date().toISOString(),
+      item: {
+        id: '2',
+        name: 'Jane Smith',
+        email: 'jane@example.com'
+      }
+    }
+  ]
 
-    return NextResponse.json({ items: mockFlaggedItems })
-
-  } catch (error) {
-    console.error('Error fetching flagged items:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch flagged items' },
-      { status: 500 }
-    )
-  }
+  return NextResponse.json({ flaggedItems })
 }

@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -14,40 +14,24 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const userId = session.user.id
-
-    // Get all reviews for user's listings
-    const reviews = await prisma.review.findMany({
+    const stats = await prisma.review.aggregate({
       where: {
         listing: {
-          sellerId: userId
+          sellerId: session.user.id
         }
       },
-      select: {
+      _avg: {
         rating: true
+      },
+      _count: {
+        id: true
       }
     })
 
-    const totalReviews = reviews.length
-    const averageRating = totalReviews > 0 
-      ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews 
-      : 0
-
-    // Calculate rating distribution
-    const ratingDistribution = {
-      1: 0, 2: 0, 3: 0, 4: 0, 5: 0
-    }
-
-    reviews.forEach(review => {
-      ratingDistribution[review.rating as keyof typeof ratingDistribution]++
-    })
-
     return NextResponse.json({
-      averageRating,
-      totalReviews,
-      ratingDistribution
+      averageRating: stats._avg.rating || 0,
+      totalReviews: stats._count.id
     })
-
   } catch (error) {
     console.error('Error fetching review stats:', error)
     return NextResponse.json(
