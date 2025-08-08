@@ -16,19 +16,10 @@ export async function GET() {
 
     const messages = await prisma.message.findMany({
       where: {
-        OR: [
-          { senderId: session.user.id },
-          { receiverId: session.user.id }
-        ]
+        senderId: session.user.id
       },
       include: {
         sender: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        receiver: {
           select: {
             id: true,
             name: true

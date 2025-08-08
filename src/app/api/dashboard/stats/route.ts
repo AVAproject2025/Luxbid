@@ -39,9 +39,8 @@ export async function GET() {
       }),
       prisma.message.count({
         where: {
-          receiverId: userId,
-          read: false,
-          senderId: { not: userId }
+          senderId: userId,
+          read: false
         }
       })
     ])
