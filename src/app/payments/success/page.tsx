@@ -80,12 +80,25 @@ export default function PaymentSuccessPage() {
             <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-bold text-green-600 mb-4">
               Payment Successful!
             </h1>
-            <p className="text-gray-600">
-              Your payment has been processed successfully. You will receive a confirmation email shortly.
+            <p className="text-gray-600 mb-6">
+              Your payment has been processed successfully. You&apos;ll receive a confirmation email shortly.
             </p>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <p className="text-green-800">
+                <strong>Transaction ID:</strong> {searchParams.get('payment_intent') || 'N/A'}
+              </p>
+              <p className="text-green-800">
+                <strong>Amount:</strong> ${searchParams.get('amount') || 'N/A'}
+              </p>
+            </div>
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                Thank you for your purchase! The seller will be notified and you&apos;ll receive the item details shortly.
+              </p>
+            </div>
           </div>
 
           {/* Payment Details */}

@@ -1,175 +1,206 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { headers } from 'next/headers'
-import { stripe } from '@/lib/stripe'
-import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
+import Stripe from 'stripe';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-12-18.acacia',
+});
 
 export async function POST(request: NextRequest) {
-  const body = await request.text()
-  const headersList = await headers()
-  const signature = headersList.get('stripe-signature')
+  const body = await request.text();
+  const headersList = await headers();
+  const signature = headersList.get('stripe-signature');
 
   if (!signature) {
-    return NextResponse.json(
-      { error: 'No signature' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'No signature' }, { status: 400 });
   }
 
-  let event
+  let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
-    )
+    );
   } catch (err) {
-    console.error('Webhook signature verification failed:', err)
-    return NextResponse.json(
-      { error: 'Invalid signature' },
-      { status: 400 }
-    )
+    const error = err as Error;
+    console.error('Webhook signature verification failed:', error.message);
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
   try {
     switch (event.type) {
-      case 'checkout.session.completed':
-        await handleCheckoutSessionCompleted(event.data.object)
-        break
-      
       case 'payment_intent.succeeded':
-        await handlePaymentIntentSucceeded(event.data.object)
-        break
-      
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        await handlePaymentSuccess(paymentIntent);
+        break;
+
       case 'payment_intent.payment_failed':
-        await handlePaymentIntentFailed(event.data.object)
-        break
-      
+        const failedPayment = event.data.object as Stripe.PaymentIntent;
+        await handlePaymentFailure(failedPayment);
+        break;
+
+      case 'checkout.session.completed':
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutComplete(session);
+        break;
+
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        console.log(`Unhandled event type: ${event.type}`);
     }
 
-    return NextResponse.json({ received: true })
+    return NextResponse.json({ received: true });
   } catch (error) {
-    console.error('Error processing webhook:', error)
+    console.error('Error processing webhook:', error);
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
-    )
+    );
   }
 }
 
-async function handleCheckoutSessionCompleted(session: any) {
-  const { paymentId, listingId, offerId, buyerId, sellerId, amount, commission, totalAmount } = session.metadata
+async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
+  const { offerId, listingId, buyerId } = paymentIntent.metadata;
 
-  // Update payment status
-  await prisma.payment.update({
-    where: { id: paymentId },
-    data: {
-      status: 'COMPLETED',
-      stripePaymentIntentId: session.payment_intent,
-    }
-  })
+  if (!offerId || !listingId || !buyerId) {
+    console.error('Missing metadata in payment intent');
+    return;
+  }
 
-  // Create transaction record
-  const transaction = await prisma.transaction.create({
-    data: {
-      type: 'PAYMENT',
-      amount: parseFloat(totalAmount),
-      status: 'COMPLETED',
-      description: `Payment for listing ${listingId}`,
-      stripePaymentIntentId: session.payment_intent,
-      userId: buyerId,
-      listingId,
-    }
-  })
-
-  // Link transaction to payment
-  await prisma.payment.update({
-    where: { id: paymentId },
-    data: {
-      transaction: {
-        connect: { id: transaction.id }
-      }
-    }
-  })
-
-  // Update offer status
-  if (offerId) {
+  try {
+    // Update offer status
     await prisma.offer.update({
       where: { id: offerId },
+      data: { status: 'ACCEPTED' },
+    });
+
+    // Update listing status
+    await prisma.listing.update({
+      where: { id: listingId },
+      data: { status: 'SOLD' },
+    });
+
+    // Create payment record
+    await prisma.payment.create({
       data: {
-        status: 'ACCEPTED',
-      }
-    })
-  }
-
-  // Update listing status
-  await prisma.listing.update({
-    where: { id: listingId },
-    data: {
-      status: 'SOLD',
-    }
-  })
-
-  // Create commission transaction for platform
-  await prisma.transaction.create({
-    data: {
-      type: 'COMMISSION',
-      amount: parseFloat(commission),
-      status: 'COMPLETED',
-      description: `Platform commission for listing ${listingId}`,
-      userId: sellerId, // Commission goes to platform (represented by seller for now)
-      listingId,
-    }
-  })
-
-  // Create notifications
-  await prisma.notification.createMany({
-    data: [
-      {
-        title: 'Payment Successful',
-        message: `Your payment of $${totalAmount} for ${session.line_items?.data?.[0]?.description || 'the item'} has been processed successfully.`,
-        type: 'SUCCESS',
-        userId: buyerId,
+        amount: paymentIntent.amount / 100,
+        currency: paymentIntent.currency,
+        status: 'COMPLETED',
+        stripePaymentIntentId: paymentIntent.id,
+        commission: (paymentIntent.amount / 100) * 0.05, // 5% commission
+        buyerId,
+        listingId,
       },
-      {
-        title: 'Item Sold',
-        message: `Your item has been sold for $${amount}. Payment has been processed.`,
-        type: 'SUCCESS',
-        userId: sellerId,
-      }
-    ]
-  })
-}
+    });
 
-async function handlePaymentIntentSucceeded(paymentIntent: any) {
-  // Payment intent succeeded - this is handled by checkout.session.completed
-  console.log('Payment intent succeeded:', paymentIntent.id)
-}
-
-async function handlePaymentIntentFailed(paymentIntent: any) {
-  const { paymentId } = paymentIntent.metadata
-
-  if (paymentId) {
-    await prisma.payment.update({
-      where: { id: paymentId },
-      data: {
-        status: 'FAILED',
-      }
-    })
-
-    // Create failed transaction record
+    // Create transaction record
     await prisma.transaction.create({
       data: {
-        type: 'PAYMENT',
-        amount: paymentIntent.amount / 100,
-        status: 'FAILED',
-        description: 'Payment failed',
+        type: 'COMMISSION',
+        amount: (paymentIntent.amount / 100) * 0.05,
+        currency: paymentIntent.currency,
+        status: 'COMPLETED',
+        description: 'Platform commission',
         stripePaymentIntentId: paymentIntent.id,
-        userId: paymentIntent.metadata?.buyerId || '',
-        listingId: paymentIntent.metadata?.listingId || '',
-      }
-    })
+        buyerId,
+        listingId,
+      },
+    });
+
+    // Create notifications
+    await prisma.notification.createMany({
+      data: [
+        {
+          userId: buyerId,
+          title: 'Payment Successful',
+          message: 'Your payment has been processed successfully.',
+          type: 'SUCCESS',
+        },
+        {
+          userId: buyerId,
+          title: 'Item Purchased',
+          message: 'You have successfully purchased the item.',
+          type: 'SUCCESS',
+        },
+      ],
+    });
+
+    console.log(`Payment successful for offer ${offerId}`);
+  } catch (error) {
+    console.error('Error handling payment success:', error);
+  }
+}
+
+async function handlePaymentFailure(paymentIntent: Stripe.PaymentIntent) {
+  const { offerId, buyerId } = paymentIntent.metadata;
+
+  if (!offerId || !buyerId) {
+    console.error('Missing metadata in payment intent');
+    return;
+  }
+
+  try {
+    // Update offer status
+    await prisma.offer.update({
+      where: { id: offerId },
+      data: { status: 'PENDING' },
+    });
+
+    // Create notification
+    await prisma.notification.create({
+      data: {
+        userId: buyerId,
+        title: 'Payment Failed',
+        message: 'Your payment has failed. Please try again.',
+        type: 'ERROR',
+      },
+    });
+
+    console.log(`Payment failed for offer ${offerId}`);
+  } catch (error) {
+    console.error('Error handling payment failure:', error);
+  }
+}
+
+async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
+  const { offerId, listingId, buyerId } = session.metadata || {};
+
+  if (!offerId || !listingId || !buyerId) {
+    console.error('Missing metadata in checkout session');
+    return;
+  }
+
+  try {
+    // Update offer status
+    await prisma.offer.update({
+      where: { id: offerId },
+      data: { status: 'ACCEPTED' },
+    });
+
+    // Update listing status
+    await prisma.listing.update({
+      where: { id: listingId },
+      data: { status: 'SOLD' },
+    });
+
+    // Create payment record
+    await prisma.payment.create({
+      data: {
+        amount: (session.amount_total || 0) / 100,
+        currency: session.currency || 'usd',
+        status: 'COMPLETED',
+        stripeSessionId: session.id,
+        commission: ((session.amount_total || 0) / 100) * 0.05,
+        buyerId,
+        listingId,
+      },
+    });
+
+    console.log(`Checkout completed for offer ${offerId}`);
+  } catch (error) {
+    console.error('Error handling checkout complete:', error);
   }
 }
