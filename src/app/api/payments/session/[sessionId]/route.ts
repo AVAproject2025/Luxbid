@@ -65,7 +65,7 @@ export async function GET(
       sessionId: stripeSession.id,
       amount: payment.amount,
       commission: payment.commission,
-      totalAmount: payment.amount + payment.commission,
+      totalAmount: Number(payment.amount) + Number(payment.commission),
       listingTitle: payment.listing.title,
       paymentId: payment.id,
       status: payment.status,
