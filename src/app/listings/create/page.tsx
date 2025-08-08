@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -91,7 +92,7 @@ export default function CreateListingPage() {
         const data = await response.json()
         setError(data.error || 'Failed to create listing')
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred while creating the listing')
     } finally {
       setLoading(false)
@@ -109,15 +110,15 @@ export default function CreateListingPage() {
               <span className="text-xl font-bold text-gray-900">LuxBID</span>
             </div>
             <nav className="hidden md:flex items-center space-x-8">
-              <a href="/listings" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/listings" className="text-gray-600 hover:text-gray-900 transition-colors">
                 Browse Items
-              </a>
-              <a href="/dashboard" className="text-gray-900 font-medium">
+              </Link>
+              <Link href="/dashboard" className="text-gray-900 font-medium">
                 Dashboard
-              </a>
-              <a href="/profile" className="text-gray-600 hover:text-gray-900 transition-colors">
+              </Link>
+              <Link href="/profile" className="text-gray-600 hover:text-gray-900 transition-colors">
                 Profile
-              </a>
+              </Link>
             </nav>
           </div>
         </div>

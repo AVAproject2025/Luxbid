@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, ArrowLeft, Package, DollarSign } from 'lucide-react'
+import { CheckCircle, ArrowLeft, Package } from 'lucide-react'
 import Link from 'next/link'
 
 export default function PaymentSuccessPage() {
