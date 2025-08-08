@@ -90,8 +90,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate commission and total
-    const commission = calculateCommission(offer.amount)
-    const totalAmount = calculateTotalWithCommission(offer.amount)
+    const commission = calculateCommission(Number(offer.amount))
+    const totalAmount = calculateTotalWithCommission(Number(offer.amount))
 
     // Create or get existing payment record
     let payment = await prisma.payment.findFirst({
