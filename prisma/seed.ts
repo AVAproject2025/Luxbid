@@ -1,0 +1,146 @@
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+async function main() {
+  // Create test users
+  const seller1 = await prisma.user.upsert({
+    where: { email: 'seller1@example.com' },
+    update: {},
+    create: {
+      email: 'seller1@example.com',
+      name: 'John Seller',
+      password: '$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m', // password
+      role: 'SELLER',
+    },
+  })
+
+  const seller2 = await prisma.user.upsert({
+    where: { email: 'seller2@example.com' },
+    update: {},
+    create: {
+      email: 'seller2@example.com',
+      name: 'Jane Seller',
+      password: '$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m', // password
+      role: 'SELLER',
+    },
+  })
+
+  const buyer1 = await prisma.user.upsert({
+    where: { email: 'buyer1@example.com' },
+    update: {},
+    create: {
+      email: 'buyer1@example.com',
+      name: 'Bob Buyer',
+      password: '$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m', // password
+      role: 'BUYER',
+    },
+  })
+
+  const buyer2 = await prisma.user.upsert({
+    where: { email: 'buyer2@example.com' },
+    update: {},
+    create: {
+      email: 'buyer2@example.com',
+      name: 'Alice Buyer',
+      password: '$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m', // password
+      role: 'BUYER',
+    },
+  })
+
+  // Create test listings
+  const listing1 = await prisma.listing.upsert({
+    where: { id: 'listing-1' },
+    update: {},
+    create: {
+      id: 'listing-1',
+      title: 'Rolex Submariner Date',
+      description: 'Beautiful Rolex Submariner Date in excellent condition. Includes original box and papers.',
+      category: 'WATCH',
+      brand: 'Rolex',
+      model: 'Submariner Date',
+      year: 2020,
+      condition: 'EXCELLENT',
+      askingPrice: 12000,
+      images: JSON.stringify(['/uploads/rolex-1.jpg', '/uploads/rolex-2.jpg']),
+      status: 'ACTIVE',
+      sellerId: seller1.id,
+    },
+  })
+
+  const listing2 = await prisma.listing.upsert({
+    where: { id: 'listing-2' },
+    update: {},
+    create: {
+      id: 'listing-2',
+      title: 'Hermès Birkin Bag',
+      description: 'Authentic Hermès Birkin bag in black leather. Perfect condition.',
+      category: 'BAG',
+      brand: 'Hermès',
+      model: 'Birkin',
+      year: 2019,
+      condition: 'EXCELLENT',
+      askingPrice: 15000,
+      images: JSON.stringify(['/uploads/hermes-1.jpg', '/uploads/hermes-2.jpg']),
+      status: 'ACTIVE',
+      sellerId: seller2.id,
+    },
+  })
+
+  const listing3 = await prisma.listing.upsert({
+    where: { id: 'listing-3' },
+    update: {},
+    create: {
+      id: 'listing-3',
+      title: 'Cartier Love Bracelet',
+      description: '18k gold Cartier Love bracelet with diamonds. Includes screwdriver.',
+      category: 'JEWELRY',
+      brand: 'Cartier',
+      model: 'Love Bracelet',
+      year: 2021,
+      condition: 'NEW',
+      askingPrice: 8000,
+      images: JSON.stringify(['/uploads/cartier-1.jpg']),
+      status: 'ACTIVE',
+      sellerId: seller1.id,
+    },
+  })
+
+  // Create test offers
+  await prisma.offer.upsert({
+    where: { id: 'offer-1' },
+    update: {},
+    create: {
+      id: 'offer-1',
+      amount: 11500,
+      message: 'I am very interested in this watch. Would you consider this offer?',
+      status: 'PENDING',
+      buyerId: buyer1.id,
+      listingId: listing1.id,
+    },
+  })
+
+  await prisma.offer.upsert({
+    where: { id: 'offer-2' },
+    update: {},
+    create: {
+      id: 'offer-2',
+      amount: 14000,
+      message: 'Beautiful bag! I would love to add this to my collection.',
+      status: 'PENDING',
+      buyerId: buyer2.id,
+      listingId: listing2.id,
+    },
+  })
+
+  console.log('Seed data created successfully!')
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })

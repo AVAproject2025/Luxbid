@@ -1,0 +1,20 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "DATABASE_URL": "@database-url",
+    "NEXTAUTH_URL": "@nextauth-url",
+    "NEXTAUTH_SECRET": "@nextauth-secret",
+    "STRIPE_SECRET_KEY": "@stripe-secret-key",
+    "STRIPE_WEBHOOK_SECRET": "@stripe-webhook-secret",
+    "STRIPE_PUBLISHABLE_KEY": "@stripe-publishable-key"
+  }
+}
