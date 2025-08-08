@@ -1,0 +1,52 @@
+# Multi-stage build pentru performanță maximă
+FROM node:18-alpine AS base
+
+# Instalează dependențele necesare
+RUN apk add --no-cache libc6-compat
+
+# Setează working directory
+WORKDIR /app
+
+# Copiază package files
+COPY package*.json ./
+
+# Instalează dependențele
+RUN npm ci --only=production && npm cache clean --force
+
+# Stage pentru build
+FROM base AS builder
+
+# Copiază source code
+COPY . .
+
+# Build aplicația
+RUN npm run build
+
+# Stage pentru producție
+FROM base AS runner
+
+# Creează user non-root pentru securitate
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copiază built application
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Setează user
+USER nextjs
+
+# Expune portul
+EXPOSE 3000
+
+# Setează variabilele de mediu
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+# Start aplicația
+CMD ["node", "server.js"]
