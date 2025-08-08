@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: listing.title,
               description: `Offer on ${listing.title}`,
-              images: listing.images ? JSON.parse(listing.images).slice(0, 1) : [],
+              images: listing.images ? listing.images.slice(0, 1) : [],
             },
             unit_amount: Math.round(totalAmount * 100), // Convert to cents
           },

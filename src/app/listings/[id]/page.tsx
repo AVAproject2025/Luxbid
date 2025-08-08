@@ -177,7 +177,7 @@ export default function ListingDetailPage({ params }: PageProps) {
     )
   }
 
-  const images = listing.images ? JSON.parse(listing.images) : []
+  const images = listing.images || []
   const isSeller = session?.user?.id === listing.seller.id
   const userOffer = offers.find(offer => offer.buyer.id === session?.user?.id)
 

@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     const listing = await prisma.listing.create({
       data: {
         ...validatedData,
-        images: validatedData.images ? JSON.stringify(validatedData.images) : '[]',
+        images: validatedData.images || [],
         sellerId: session.user.id,
         endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
       },

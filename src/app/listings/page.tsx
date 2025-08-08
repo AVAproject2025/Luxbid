@@ -117,7 +117,7 @@ export default function ListingsPage() {
                 <div className="aspect-square bg-gray-100">
                   {listing.images ? (
                     <img
-                      src={JSON.parse(listing.images)[0] || '/placeholder.jpg'}
+                      src={listing.images[0] || '/placeholder.jpg'}
                       alt={listing.title}
                       className="w-full h-full object-cover"
                     />
