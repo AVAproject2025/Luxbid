@@ -4,7 +4,9 @@ import Stripe from 'stripe';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+// Allow build to proceed without Stripe key (will be set in Vercel env vars)
+const stripeKey = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
+const stripe = new Stripe(stripeKey, {
   apiVersion: '2025-07-30.basil',
 });
 
