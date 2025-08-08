@@ -6,16 +6,8 @@ const nextConfig: NextConfig = {
   
   // Experimental features pentru performanță
   experimental: {
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-    // Optimizări pentru performanță
-    optimizeCss: true,
+    // Dezactivez temporar optimizeCss pentru Vercel build
+    // optimizeCss: true,
     optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react'],
   },
   
