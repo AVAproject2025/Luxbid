@@ -48,7 +48,11 @@ interface Offer {
   }
 }
 
-export default function ListingDetailPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default function ListingDetailPage({ params }: PageProps) {
   const { session, isAuthenticated } = useAuth()
   const [listing, setListing] = useState<Listing | null>(null)
   const [offers, setOffers] = useState<Offer[]>([])
@@ -56,12 +60,23 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
   const [submittingOffer, setSubmittingOffer] = useState(false)
   const [offerAmount, setOfferAmount] = useState('')
   const [offerMessage, setOfferMessage] = useState('')
+  const [listingId, setListingId] = useState<string>('')
+
+  useEffect(() => {
+    const getParams = async () => {
+      const { id } = await params
+      setListingId(id)
+    }
+    getParams()
+  }, [params])
 
   const fetchListingData = useCallback(async () => {
+    if (!listingId) return
+    
     try {
       const [listingRes, offersRes] = await Promise.all([
-        fetch(`/api/listings/${params.id}`),
-        fetch(`/api/offers?listingId=${params.id}`)
+        fetch(`/api/listings/${listingId}`),
+        fetch(`/api/offers?listingId=${listingId}`)
       ])
 
       if (listingRes.ok) {
@@ -78,7 +93,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
     } finally {
       setLoading(false)
     }
-  }, [params.id])
+  }, [listingId])
 
   useEffect(() => {
     fetchListingData()
@@ -86,7 +101,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
 
   const handleSubmitOffer = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!isAuthenticated) return
+    if (!isAuthenticated || !listingId) return
 
     setSubmittingOffer(true)
     try {
@@ -96,7 +111,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          listingId: params.id,
+          listingId,
           amount: parseFloat(offerAmount),
           message: offerMessage || undefined,
         }),
