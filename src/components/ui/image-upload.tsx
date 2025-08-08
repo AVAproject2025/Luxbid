@@ -10,11 +10,7 @@ interface ImageUploadProps {
   className?: string;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({
-  onImagesChange,
-  maxImages = 5,
-  className
-}) => {
+export function ImageUpload({ onImagesChange, maxImages = 5, className }: ImageUploadProps) {
   const [images, setImages] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -128,6 +124,4 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       )}
     </div>
   );
-};
-
-export default ImageUpload;
+}

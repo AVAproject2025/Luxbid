@@ -17,19 +17,13 @@ interface CreateListingForm {
   model: string
   year: string
   condition: 'NEW' | 'EXCELLENT' | 'GOOD' | 'FAIR'
-  startingPrice: string
-  reservePrice: string
-  endDate: string
+  askingPrice: string
   images: string[]
 }
 
 export default function CreateListingPage() {
   const router = useRouter()
-  const { session, isAuthenticated } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
-
+  const { isAuthenticated } = useAuth()
   const [formData, setFormData] = useState<CreateListingForm>({
     title: '',
     description: '',
@@ -38,34 +32,19 @@ export default function CreateListingPage() {
     model: '',
     year: '',
     condition: 'EXCELLENT',
-    startingPrice: '',
-    reservePrice: '',
-    endDate: '',
+    askingPrice: '',
     images: []
   })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [showToast, setShowToast] = useState(false)
 
   if (!isAuthenticated) {
     router.push('/login')
     return null
   }
 
-  if (session?.user?.role !== 'SELLER') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-        <div className="container mx-auto">
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-            <p className="text-gray-600 mb-4">Only sellers can create listings.</p>
-            <Button onClick={() => router.push('/listings')}>
-              Back to Listings
-            </Button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
@@ -73,7 +52,7 @@ export default function CreateListingPage() {
     }))
   }
 
-  const handleImagesUploaded = (images: string[]) => {
+  const handleImagesChange = (images: string[]) => {
     setFormData(prev => ({
       ...prev,
       images
@@ -82,21 +61,15 @@ export default function CreateListingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (formData.images.length === 0) {
-      setError('Please upload at least one image')
-      return
-    }
-
-    if (!formData.title || !formData.description || !formData.startingPrice) {
-      setError('Please fill in all required fields')
-      return
-    }
-
-    setLoading(true)
     setError('')
+    setLoading(true)
 
     try {
+      if (!formData.title || !formData.description || !formData.askingPrice) {
+        setError('Please fill in all required fields')
+        return
+      }
+
       const response = await fetch('/api/listings', {
         method: 'POST',
         headers: {
@@ -104,28 +77,22 @@ export default function CreateListingPage() {
         },
         body: JSON.stringify({
           ...formData,
-          startingPrice: parseFloat(formData.startingPrice),
-          reservePrice: formData.reservePrice ? parseFloat(formData.reservePrice) : undefined,
+          askingPrice: parseFloat(formData.askingPrice),
           year: formData.year ? parseInt(formData.year) : undefined,
-          endDate: new Date(formData.endDate).toISOString(),
         }),
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create listing')
+      if (response.ok) {
+        setShowToast(true)
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Failed to create listing')
       }
-
-      setToast({ message: 'Listing created successfully!', type: 'success' })
-      setTimeout(() => {
-        router.push(`/listings/${data.listing.id}`)
-      }, 1500)
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create listing'
-      setError(errorMessage)
-      setToast({ message: errorMessage, type: 'error' })
+    } catch (error) {
+      setError('An error occurred while creating the listing')
     } finally {
       setLoading(false)
     }
@@ -133,61 +100,61 @@ export default function CreateListingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Toast Notifications */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {/* Header */}
+      <header className="border-b bg-white/80 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600"></div>
+              <span className="text-xl font-bold text-gray-900">LuxBID</span>
+            </div>
+            <nav className="hidden md:flex items-center space-x-8">
+              <a href="/listings" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Browse Items
+              </a>
+              <a href="/dashboard" className="text-gray-900 font-medium">
+                Dashboard
+              </a>
+              <a href="/profile" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Profile
+              </a>
+            </nav>
+          </div>
+        </div>
+      </header>
 
+      {/* Create Listing Form */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Listing</h1>
-            <p className="text-gray-600">List your luxury item for auction</p>
+            <p className="text-gray-600">List your luxury item for sale with private offers</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-                <CardDescription>
-                  Provide the essential details about your item
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title *
-                  </label>
-                  <Input
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Rolex Submariner Date 2020"
-                    required
-                  />
-                </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Listing Details</CardTitle>
+              <CardDescription>
+                Provide detailed information about your luxury item
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title *
+                    </label>
+                    <Input
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Rolex Submariner 2020"
+                      required
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Provide a detailed description of your item..."
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={4}
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Category *
@@ -196,46 +163,34 @@ export default function CreateListingPage() {
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                     >
-                      <option value="WATCH">Watches</option>
-                      <option value="BAG">Bags</option>
+                      <option value="WATCH">Watch</option>
+                      <option value="BAG">Handbag</option>
                       <option value="JEWELRY">Jewelry</option>
                     </select>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Condition *
-                    </label>
-                    <select
-                      name="condition"
-                      value={formData.condition}
-                      onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    >
-                      <option value="NEW">New</option>
-                      <option value="EXCELLENT">Excellent</option>
-                      <option value="GOOD">Good</option>
-                      <option value="FAIR">Fair</option>
-                    </select>
-                  </div>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Item Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Item Details</CardTitle>
-                <CardDescription>
-                  Additional information about your item
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description *
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Describe your item in detail..."
+                    required
+                  />
+                </div>
+
+                {/* Brand and Model */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Brand
@@ -244,7 +199,7 @@ export default function CreateListingPage() {
                       name="brand"
                       value={formData.brand}
                       onChange={handleInputChange}
-                      placeholder="e.g., Rolex"
+                      placeholder="e.g., Rolex, Hermès, Cartier"
                     />
                   </div>
 
@@ -256,10 +211,13 @@ export default function CreateListingPage() {
                       name="model"
                       value={formData.model}
                       onChange={handleInputChange}
-                      placeholder="e.g., Submariner Date"
+                      placeholder="e.g., Submariner, Birkin, Love"
                     />
                   </div>
+                </div>
 
+                {/* Year and Condition */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Year
@@ -269,116 +227,90 @@ export default function CreateListingPage() {
                       type="number"
                       value={formData.year}
                       onChange={handleInputChange}
-                      placeholder="e.g., 2020"
+                      placeholder="2020"
                       min="1900"
                       max={new Date().getFullYear()}
                     />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Pricing */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Pricing & Duration</CardTitle>
-                <CardDescription>
-                  Set your starting price and auction duration
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Starting Price *
+                      Condition *
                     </label>
-                    <Input
-                      name="startingPrice"
-                      type="number"
-                      value={formData.startingPrice}
+                    <select
+                      name="condition"
+                      value={formData.condition}
                       onChange={handleInputChange}
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Reserve Price (Optional)
-                    </label>
-                    <Input
-                      name="reservePrice"
-                      type="number"
-                      value={formData.reservePrice}
-                      onChange={handleInputChange}
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                    />
+                    >
+                      <option value="NEW">New</option>
+                      <option value="EXCELLENT">Excellent</option>
+                      <option value="GOOD">Good</option>
+                      <option value="FAIR">Fair</option>
+                    </select>
                   </div>
                 </div>
 
+                {/* Price */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    End Date *
+                    Asking Price *
                   </label>
                   <Input
-                    name="endDate"
-                    type="datetime-local"
-                    value={formData.endDate}
+                    name="askingPrice"
+                    type="number"
+                    value={formData.askingPrice}
                     onChange={handleInputChange}
-                    min={new Date().toISOString().slice(0, 16)}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
                     required
                   />
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Images */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Images</CardTitle>
-                <CardDescription>
-                  Upload high-quality images of your item (minimum 1, maximum 10)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ImageUpload
-                  onImagesUploaded={handleImagesUploaded}
-                  maxImages={10}
-                />
-              </CardContent>
-            </Card>
+                {/* Images */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Images
+                  </label>
+                  <ImageUpload
+                    onImagesChange={handleImagesChange}
+                    maxImages={5}
+                  />
+                </div>
 
-            {/* Error Message */}
-            {error && (
-              <div className="p-4 text-sm text-red-600 bg-red-50 rounded-md">
-                {error}
-              </div>
-            )}
+                {/* Error Message */}
+                {error && (
+                  <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+                    {error}
+                  </div>
+                )}
 
-            {/* Submit Button */}
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push('/listings')}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={loading || formData.images.length === 0}
-              >
-                {loading ? 'Creating Listing...' : 'Create Listing'}
-              </Button>
-            </div>
-          </form>
+                {/* Submit Button */}
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="px-8"
+                  >
+                    {loading ? 'Creating...' : 'Create Listing'}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </div>
+
+      {/* Toast */}
+      {showToast && (
+        <Toast
+          message="Listing created successfully!"
+          type="success"
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   )
 }

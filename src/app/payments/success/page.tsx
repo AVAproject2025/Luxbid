@@ -1,71 +1,31 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, Package, CreditCard, ArrowRight } from 'lucide-react'
-import { useAuth } from '@/hooks/useAuth'
-
-interface PaymentSuccessData {
-  sessionId: string
-  amount: number
-  commission: number
-  totalAmount: number
-  listingTitle: string
-  paymentId: string
-}
+import { CheckCircle, ArrowLeft, Package, DollarSign } from 'lucide-react'
+import Link from 'next/link'
 
 export default function PaymentSuccessPage() {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const { session, isAuthenticated } = useAuth()
-  const [paymentData, setPaymentData] = useState<PaymentSuccessData | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const sessionId = searchParams.get('session_id')
-
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login')
-      return
-    }
+    // Simulate loading
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 1000)
 
-    if (!sessionId) {
-      router.push('/listings')
-      return
-    }
-
-    // Fetch payment details
-    const fetchPaymentDetails = async () => {
-      try {
-        const response = await fetch(`/api/payments/session/${sessionId}`)
-        if (response.ok) {
-          const data = await response.json()
-          setPaymentData(data)
-        } else {
-          console.error('Failed to fetch payment details')
-        }
-      } catch (error) {
-        console.error('Error fetching payment details:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchPaymentDetails()
-  }, [sessionId, isAuthenticated, router])
-
-  if (!isAuthenticated) {
-    return null
-  }
+    return () => clearTimeout(timer)
+  }, [])
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading payment details...</p>
+          <p className="text-gray-600">Processing your payment...</p>
         </div>
       </div>
     )
@@ -73,154 +33,111 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          {/* Success Header */}
-          <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+      {/* Header */}
+      <header className="border-b bg-white/80 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600"></div>
+              <span className="text-xl font-bold text-gray-900">LuxBID</span>
             </div>
-            <h1 className="text-2xl font-bold text-green-600 mb-4">
-              Payment Successful!
-            </h1>
-            <p className="text-gray-600 mb-6">
-              Your payment has been processed successfully. You&apos;ll receive a confirmation email shortly.
-            </p>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <p className="text-green-800">
-                <strong>Transaction ID:</strong> {searchParams.get('payment_intent') || 'N/A'}
-              </p>
-              <p className="text-green-800">
-                <strong>Amount:</strong> ${searchParams.get('amount') || 'N/A'}
-              </p>
-            </div>
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                Thank you for your purchase! The seller will be notified and you&apos;ll receive the item details shortly.
-              </p>
-            </div>
+            <nav className="hidden md:flex items-center space-x-8">
+              <Link href="/listings" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Browse Items
+              </Link>
+              <Link href="/dashboard" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Dashboard
+              </Link>
+              <Link href="/profile" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Profile
+              </Link>
+            </nav>
           </div>
+        </div>
+      </header>
 
-          {/* Payment Details */}
-          {paymentData && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="w-5 h-5" />
-                  Payment Details
-                </CardTitle>
-                <CardDescription>
-                  Transaction completed successfully
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Item
-                    </label>
-                    <p className="text-gray-900 font-medium">{paymentData.listingTitle}</p>
+      {/* Success Content */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-2xl mx-auto">
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="text-center pb-8">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <h1 className="text-2xl font-bold text-green-600 mb-4">
+                Payment Successful!
+              </h1>
+              <p className="text-gray-600 mb-6">
+                Your payment has been processed successfully. You&apos;ll receive a confirmation email shortly.
+              </p>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <p className="text-green-800">
+                  <strong>Transaction ID:</strong> {searchParams.get('payment_intent') || 'N/A'}
+                </p>
+                <p className="text-green-800">
+                  <strong>Amount:</strong> ${searchParams.get('amount') || 'N/A'}
+                </p>
+              </div>
+              <div className="space-y-4">
+                <p className="text-gray-600">
+                  Thank you for your purchase! The seller will be notified and you&apos;ll receive the item details shortly.
+                </p>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Order Details */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4">Order Details</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Item:</span>
+                    <span className="font-medium">Luxury Watch</span>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Payment ID
-                    </label>
-                    <p className="text-gray-900 font-mono text-sm">{paymentData.paymentId}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Price:</span>
+                    <span className="font-medium">${searchParams.get('amount') || '0'}</span>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Amount
-                    </label>
-                    <p className="text-gray-900 font-medium">${paymentData.amount.toFixed(2)}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Commission:</span>
+                    <span className="font-medium">5%</span>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Commission
-                    </label>
-                    <p className="text-gray-900 font-medium">${paymentData.commission.toFixed(2)}</p>
-                  </div>
-                </div>
-                
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-gray-900">Total Paid</span>
-                    <span className="text-2xl font-bold text-green-600">
-                      ${paymentData.totalAmount.toFixed(2)}
+                  <div className="flex items-center justify-between border-t pt-3">
+                    <span className="text-lg font-semibold">Total:</span>
+                    <span className="text-lg font-semibold text-green-600">
+                      ${searchParams.get('amount') || '0'}
                     </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </div>
 
-          {/* Next Steps */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>What's Next?</CardTitle>
-              <CardDescription>
-                Here's what happens after your successful payment
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-blue-600 text-sm font-medium">1</span>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">Payment Confirmation</h3>
-                    <p className="text-sm text-gray-600">
-                      You'll receive a confirmation email with your payment details and receipt.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-blue-600 text-sm font-medium">2</span>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">Seller Notification</h3>
-                    <p className="text-sm text-gray-600">
-                      The seller will be notified of your payment and will contact you to arrange delivery.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-blue-600 text-sm font-medium">3</span>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">Item Delivery</h3>
-                    <p className="text-sm text-gray-600">
-                      Once the seller confirms, you can arrange pickup or delivery of your item.
-                    </p>
-                  </div>
-                </div>
+              {/* Next Steps */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-900 mb-2">What&apos;s Next?</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• You&apos;ll receive an email confirmation</li>
+                  <li>• The seller will be notified of your purchase</li>
+                  <li>• Contact details will be shared after commission payment</li>
+                  <li>• Arrange shipping and delivery with the seller</li>
+                </ul>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-6">
+                <Link href="/dashboard" className="flex-1">
+                  <Button className="w-full" variant="outline">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Go to Dashboard
+                  </Button>
+                </Link>
+                <Link href="/listings" className="flex-1">
+                  <Button className="w-full">
+                    <Package className="w-4 h-4 mr-2" />
+                    Browse More Items
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-2"
-            >
-              <CreditCard className="w-4 h-4" />
-              View Dashboard
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={() => router.push('/listings')}
-              className="flex items-center gap-2"
-            >
-              Browse More Items
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </div>
         </div>
       </div>
     </div>

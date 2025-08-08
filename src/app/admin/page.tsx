@@ -6,11 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   Users, 
-  AlertTriangle, 
   Flag, 
   CheckCircle, 
   XCircle,
-  Eye,
   Ban,
   Unlock
 } from 'lucide-react';
