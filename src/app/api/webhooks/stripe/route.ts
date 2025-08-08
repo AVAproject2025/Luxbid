@@ -105,7 +105,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
         status: 'COMPLETED',
         description: 'Platform commission',
         stripePaymentIntentId: paymentIntent.id,
-        buyerId,
+        userId: buyerId,
         listingId,
       },
     });
