@@ -337,6 +337,7 @@ const dictionaries: Record<SupportedLang, Dictionary> = {
   ro: {
     'nav.browse': 'Vezi Anunțuri',
     'nav.dashboard': 'Panou',
+    'nav.messages': 'Mesaje',
     'nav.profile': 'Profil',
     'nav.signIn': 'Autentificare',
     'nav.signOut': 'Deconectare',
