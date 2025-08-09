@@ -18,12 +18,37 @@ export default function HomePage() {
           <p className="text-lg text-luxbid-dark-600 mb-8 max-w-2xl mx-auto">{t('home.subtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/listings">
-              <Button size="lg" className="text-lg px-8 py-6 bg-luxbid-gold-600 hover:bg-luxbid-gold-700 text-white font-bold shadow-lg">
+              <Button 
+                size="lg" 
+                style={{
+                  backgroundColor: '#B8975A',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: '18px',
+                  padding: '16px 32px',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  border: 'none'
+                }}
+                className="text-lg hover:opacity-90 transition-opacity"
+              >
                 {t('home.ctaBrowse')}
               </Button>
             </Link>
             <Link href="/register">
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-2 border-luxbid-dark-700 bg-white text-luxbid-dark-900 hover:bg-luxbid-dark-100 font-bold shadow-lg">
+              <Button 
+                variant="outline" 
+                size="lg"
+                style={{
+                  backgroundColor: 'white',
+                  color: '#2D2D2D',
+                  fontWeight: 'bold',
+                  fontSize: '18px',
+                  padding: '16px 32px',
+                  border: '2px solid #2D2D2D',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                }}
+                className="text-lg hover:opacity-90 transition-opacity"
+              >
                 {t('home.ctaSell')}
               </Button>
             </Link>
