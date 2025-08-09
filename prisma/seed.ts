@@ -3,15 +3,16 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  // Create test users
+  // Create test users with new unified system
   const seller1 = await prisma.user.upsert({
     where: { email: 'seller1@example.com' },
     update: {},
     create: {
       email: 'seller1@example.com',
-      name: 'John Seller',
+      name: 'John Luxury Dealer',
       password: '$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m', // password
-      role: 'SELLER',
+      role: 'USER',
+      accountType: 'COMPANY',
     },
   })
 
@@ -20,9 +21,10 @@ async function main() {
     update: {},
     create: {
       email: 'seller2@example.com',
-      name: 'Jane Seller',
+      name: 'Jane Collector',
       password: '$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m', // password
-      role: 'SELLER',
+      role: 'USER',
+      accountType: 'INDIVIDUAL',
     },
   })
 
@@ -31,9 +33,10 @@ async function main() {
     update: {},
     create: {
       email: 'buyer1@example.com',
-      name: 'Bob Buyer',
+      name: 'Bob Enthusiast',
       password: '$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m', // password
-      role: 'BUYER',
+      role: 'USER',
+      accountType: 'INDIVIDUAL',
     },
   })
 
@@ -42,9 +45,10 @@ async function main() {
     update: {},
     create: {
       email: 'buyer2@example.com',
-      name: 'Alice Buyer',
+      name: 'Alice Investment Co',
       password: '$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m', // password
-      role: 'BUYER',
+      role: 'USER',
+      accountType: 'COMPANY',
     },
   })
 
