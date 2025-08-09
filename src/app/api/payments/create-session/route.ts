@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { stripe, calculateCommission, calculateTotalWithCommission } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
+import { calculateCommission as calculateTierCommission, PRICING_TIERS } from '@/lib/pricing'
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,7 +33,9 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            membershipTier: true,
+            membershipExpiry: true
           }
         }
       }
@@ -89,9 +92,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate commission and total
-    const commission = calculateCommission(Number(offer.amount))
-    const totalAmount = calculateTotalWithCommission(Number(offer.amount))
+    // Calculate commission based on seller's membership tier
+    const sellerTier = listing.seller.membershipTier?.toLowerCase() || 'basic'
+    const commission = calculateTierCommission(Number(offer.amount), sellerTier)
+    const totalAmount = Number(offer.amount) + commission
 
     // Create or get existing payment record
     let payment = await prisma.payment.findFirst({

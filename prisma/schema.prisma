@@ -48,6 +48,14 @@ model User {
   accountType   AccountType @default(INDIVIDUAL)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
+  // Monetization fields
+  membershipTier    MembershipTier @default(BASIC)
+  membershipExpiry  DateTime?
+  stripeCustomerId  String?
+  totalSpent        Float @default(0)
+  totalEarned       Float @default(0)
+  listingCount      Int @default(0)
 
   accounts      Account[]
   sessions      Session[]
@@ -183,6 +191,13 @@ enum UserRole {
 enum AccountType {
   INDIVIDUAL  // Persoană fizică
   COMPANY     // Companie
+}
+
+enum MembershipTier {
+  BASIC       // Free tier
+  PREMIUM     // €49/month
+  VIP         // €99/month  
+  DIAMOND     // €999/month
 }
 
 enum ListingStatus {
