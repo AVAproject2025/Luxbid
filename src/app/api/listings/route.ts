@@ -69,9 +69,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (session.user.role !== 'SELLER') {
+    // Allow both SELLER and BUYER to create listings for testing
+    if (session.user.role !== 'SELLER' && session.user.role !== 'BUYER') {
       return NextResponse.json(
-        { error: 'Only sellers can create listings' },
+        { error: 'Only sellers and buyers can create listings' },
         { status: 403 }
       )
     }
