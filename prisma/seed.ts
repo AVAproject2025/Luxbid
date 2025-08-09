@@ -55,7 +55,9 @@ async function main() {
   // Create test listings
   const listing1 = await prisma.listing.upsert({
     where: { id: 'listing-1' },
-    update: {},
+    update: {
+      images: JSON.stringify(['/uploads/rolex-1.svg', '/uploads/rolex-2.svg']),
+    },
     create: {
       id: 'listing-1',
       title: 'Rolex Submariner Date',
@@ -66,7 +68,7 @@ async function main() {
       year: 2020,
       condition: 'EXCELLENT',
       askingPrice: 12000,
-      images: JSON.stringify(['/uploads/rolex-1.jpg', '/uploads/rolex-2.jpg']),
+      images: JSON.stringify(['/uploads/rolex-1.svg', '/uploads/rolex-2.svg']),
       status: 'ACTIVE',
       sellerId: seller1.id,
     },
@@ -74,7 +76,9 @@ async function main() {
 
   const listing2 = await prisma.listing.upsert({
     where: { id: 'listing-2' },
-    update: {},
+    update: {
+      images: JSON.stringify(['/uploads/hermes-1.svg', '/uploads/hermes-2.svg']),
+    },
     create: {
       id: 'listing-2',
       title: 'Hermès Birkin Bag',
@@ -85,7 +89,7 @@ async function main() {
       year: 2019,
       condition: 'EXCELLENT',
       askingPrice: 15000,
-      images: JSON.stringify(['/uploads/hermes-1.jpg', '/uploads/hermes-2.jpg']),
+      images: JSON.stringify(['/uploads/hermes-1.svg', '/uploads/hermes-2.svg']),
       status: 'ACTIVE',
       sellerId: seller2.id,
     },
@@ -93,7 +97,9 @@ async function main() {
 
   const listing3 = await prisma.listing.upsert({
     where: { id: 'listing-3' },
-    update: {},
+    update: {
+      images: JSON.stringify(['/uploads/cartier-1.svg']),
+    },
     create: {
       id: 'listing-3',
       title: 'Cartier Love Bracelet',
@@ -104,7 +110,7 @@ async function main() {
       year: 2021,
       condition: 'NEW',
       askingPrice: 8000,
-      images: JSON.stringify(['/uploads/cartier-1.jpg']),
+      images: JSON.stringify(['/uploads/cartier-1.svg']),
       status: 'ACTIVE',
       sellerId: seller1.id,
     },
