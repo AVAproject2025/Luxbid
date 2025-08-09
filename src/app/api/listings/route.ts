@@ -69,13 +69,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Allow both SELLER and BUYER to create listings for testing
-    if (session.user.role !== 'SELLER' && session.user.role !== 'BUYER') {
-      return NextResponse.json(
-        { error: 'Only sellers and buyers can create listings' },
-        { status: 403 }
-      )
-    }
+    // Any authenticated user can create listings
+    // Role check removed - everyone can buy and sell
 
     const body = await request.json()
     const validatedData = createListingSchema.parse(body)

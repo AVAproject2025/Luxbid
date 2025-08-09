@@ -34,7 +34,7 @@ export function useAuth() {
     name: string
     email: string
     password: string
-    role: 'BUYER' | 'SELLER'
+    accountType: 'INDIVIDUAL' | 'COMPANY'
   }) => {
     try {
       const response = await fetch('/api/auth/register', {

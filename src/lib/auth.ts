@@ -3,12 +3,17 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
-type AppUserRole = 'BUYER' | 'SELLER' | 'ADMIN'
+type AppUserRole = 'USER' | 'ADMIN'
+type AppAccountType = 'INDIVIDUAL' | 'COMPANY'
 
 enum RoleEnum {
-  BUYER = 'BUYER',
-  SELLER = 'SELLER',
+  USER = 'USER',
   ADMIN = 'ADMIN',
+}
+
+enum AccountTypeEnum {
+  INDIVIDUAL = 'INDIVIDUAL',
+  COMPANY = 'COMPANY',
 }
 
 export const authOptions: NextAuthOptions = {
@@ -48,6 +53,8 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role as AppUserRole,
+          accountType: user.accountType as AppAccountType,
+          createdAt: user.createdAt.toISOString(),
         }
       }
     })
@@ -58,7 +65,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user.role as AppUserRole) || RoleEnum.BUYER
+        token.role = (user.role as AppUserRole) || RoleEnum.USER
+        token.accountType = (user.accountType as AppAccountType) || AccountTypeEnum.INDIVIDUAL
+        token.createdAt = user.createdAt || new Date().toISOString()
         token.id = user.id
       }
       return token
@@ -66,7 +75,9 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string
-        session.user.role = (token.role as AppUserRole) || RoleEnum.BUYER
+        session.user.role = (token.role as AppUserRole) || RoleEnum.USER
+        session.user.accountType = (token.accountType as AppAccountType) || AccountTypeEnum.INDIVIDUAL
+        session.user.createdAt = token.createdAt as string || new Date().toISOString()
       }
       return session
     }

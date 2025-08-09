@@ -16,7 +16,7 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'BUYER' as 'BUYER' | 'SELLER'
+    accountType: 'INDIVIDUAL' as 'INDIVIDUAL' | 'COMPANY'
   })
   const [error, setError] = useState('')
   const { register, isLoading } = useAuth()
@@ -36,7 +36,7 @@ export default function RegisterPage() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        role: formData.role,
+        accountType: formData.accountType,
       })
       router.push('/login')
     } catch (error) {
@@ -99,19 +99,19 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="role" className="text-sm font-medium">
-                I want to
+              <label htmlFor="accountType" className="text-sm font-medium">
+                {t('register.accountType')}
               </label>
               <select
-                id="role"
-                name="role"
-                value={formData.role}
+                id="accountType"
+                name="accountType"
+                value={formData.accountType}
                 onChange={handleChange}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={isLoading}
               >
-                <option value="BUYER">Buyer</option>
-                <option value="SELLER">Seller</option>
+                <option value="INDIVIDUAL">{t('register.individual')}</option>
+                <option value="COMPANY">{t('register.company')}</option>
               </select>
             </div>
             <div className="space-y-2">

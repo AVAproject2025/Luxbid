@@ -44,7 +44,8 @@ model User {
   password      String?
   emailVerified DateTime?
   image         String?
-  role          UserRole  @default(BUYER)
+  role          UserRole  @default(USER)
+  accountType   AccountType @default(INDIVIDUAL)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -175,9 +176,13 @@ model Notification {
 }
 
 enum UserRole {
-  BUYER
-  SELLER
+  USER
   ADMIN
+}
+
+enum AccountType {
+  INDIVIDUAL  // Persoană fizică
+  COMPANY     // Companie
 }
 
 enum ListingStatus {

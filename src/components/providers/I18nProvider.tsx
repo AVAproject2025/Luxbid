@@ -183,6 +183,11 @@ const dictionaries: Record<SupportedLang, Dictionary> = {
     'auth.register.error': 'Failed to create account',
     'auth.register.success': 'Account created successfully!',
     'auth.register.hasAccount': 'Already have an account?',
+    
+    // Register account types
+    'register.accountType': 'Account Type',
+    'register.individual': 'Individual (Personal)',
+    'register.company': 'Company (Business)',
 
     // Payments
     'payment.success.title': 'Payment Successful!',
@@ -386,6 +391,11 @@ const dictionaries: Record<SupportedLang, Dictionary> = {
     'dashboard.saved': 'Articole salvate',
     'dashboard.recentOffers': 'Oferte recente',
     'dashboard.accepted': 'Acorduri acceptate',
+    
+    // Register account types (Romanian)
+    'register.accountType': 'Tipul contului',
+    'register.individual': 'Persoană fizică',
+    'register.company': 'Companie',
   },
   it: {
     'nav.browse': 'Sfoglia articoli',
