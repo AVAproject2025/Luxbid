@@ -80,12 +80,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (session.user.role !== 'BUYER') {
-      return NextResponse.json(
-        { error: 'Only buyers can make offers' },
-        { status: 403 }
-      )
-    }
+    // In unified system, any authenticated user can make offers
 
     const body = await request.json()
     const { listingId, amount, message } = createOfferSchema.parse(body)
