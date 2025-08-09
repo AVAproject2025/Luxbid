@@ -244,10 +244,16 @@ const dictionaries: Record<SupportedLang, Dictionary> = {
     'common.loading': 'Loading...',
     'common.error': 'An error occurred',
     'common.success': 'Success!',
+    'common.edit': 'Edit',
     'common.save': 'Save',
     'common.cancel': 'Cancel',
+
+    // Profile
+    'profile.title': 'My Profile',
+    'profile.subtitle': 'Manage your account settings and preferences',
+    'profile.personalInfo': 'Personal Information',
+    'profile.memberSince': 'Member since',
     'common.delete': 'Delete',
-    'common.edit': 'Edit',
     'common.view': 'View',
     'common.close': 'Close',
     'common.back': 'Back',

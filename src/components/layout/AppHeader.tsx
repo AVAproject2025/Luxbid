@@ -18,10 +18,10 @@ export default function AppHeader(): ReactElement {
     <header className="border-b bg-white/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600" />
             <span className="text-xl font-bold text-gray-900">LuxBID</span>
-          </div>
+          </Link>
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/listings" className="text-gray-600 hover:text-gray-900 transition-colors">
               {t('nav.browse')}

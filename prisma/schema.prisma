@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Account {
@@ -68,8 +68,8 @@ model Listing {
   model       String?
   year        Int?
   condition   String        // NEW, EXCELLENT, GOOD, FAIR
-  askingPrice Decimal @db.Decimal(10, 2)
-  images      String[]
+  askingPrice Float
+  images      String // JSON string for SQLite
   status      ListingStatus @default(ACTIVE)
   endDate     DateTime?
   createdAt   DateTime      @default(now())
@@ -86,7 +86,7 @@ model Listing {
 
 model Offer {
   id        String     @id @default(cuid())
-  amount    Decimal @db.Decimal(10, 2)
+  amount    Float
   message   String?
   status    OfferStatus @default(PENDING)
   createdAt DateTime   @default(now())
@@ -125,12 +125,12 @@ model Review {
 
 model Payment {
   id            String        @id @default(cuid())
-  amount        Decimal @db.Decimal(10, 2)
+  amount        Float
   currency      String        @default("USD")
   status        PaymentStatus @default(PENDING)
   stripePaymentIntentId String?
   stripeSessionId String?
-  commission    Decimal @db.Decimal(10, 2) @default(0)
+  commission    Float @default(0)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -146,7 +146,7 @@ model Payment {
 model Transaction {
   id            String            @id @default(cuid())
   type          TransactionType
-  amount        Decimal @db.Decimal(10, 2)
+  amount        Float
   currency      String            @default("USD")
   status        TransactionStatus @default(PENDING)
   description   String?
