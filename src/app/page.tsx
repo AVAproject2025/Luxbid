@@ -7,14 +7,15 @@ import { useI18n } from '@/components/providers/I18nProvider'
 export default function HomePage() {
   const { t } = useI18n()
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white">
       {/* Header is handled globally in AppHeader */}
 
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">{t('home.title')}</h1>
-          <p className="text-lg text-gray-600 mb-8">{t('home.subtitle')}</p>
+      <section className="py-20 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-luxbid-gold-100/20 to-transparent"></div>
+        <div className="container mx-auto text-center relative z-10">
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-brand bg-clip-text text-transparent mb-6">{t('home.title')}</h1>
+          <p className="text-lg text-luxbid-dark-600 mb-8 max-w-2xl mx-auto">{t('home.subtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/listings">
               <Button size="lg" className="text-lg px-8 py-6">
@@ -31,9 +32,9 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-white relative">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="text-3xl font-bold text-center text-luxbid-dark-800 mb-12">
             {t('home.whyChoose')}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
