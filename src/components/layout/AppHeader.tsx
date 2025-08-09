@@ -26,6 +26,9 @@ export default function AppHeader(): ReactElement {
             <Link href="/listings" className="text-gray-600 hover:text-gray-900 transition-colors">
               {t('nav.browse')}
             </Link>
+            <Link href="/listings/create" className="text-gray-600 hover:text-gray-900 transition-colors">
+              {t('nav.createListing')}
+            </Link>
             <Link href="/dashboard" className="text-gray-900 font-medium">
               {t('nav.dashboard')}
             </Link>

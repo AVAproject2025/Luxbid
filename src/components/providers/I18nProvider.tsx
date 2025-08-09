@@ -342,6 +342,7 @@ const dictionaries: Record<SupportedLang, Dictionary> = {
     'nav.signIn': 'Autentificare',
     'nav.signOut': 'Deconectare',
     'nav.listItem': 'Adaugă Anunț',
+    'nav.createListing': 'Creează Anunț',
     'header.welcome': 'Bun venit',
     'home.title': 'Oferte private pentru obiecte de lux',
     'home.subtitle': 'Listezi obiectul. Cumpărătorii îți trimit oferte private. Accepți cea mai bună. După plata comisionului, datele de contact se dezvăluie ambelor părți.',
