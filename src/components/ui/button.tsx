@@ -9,11 +9,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-brand text-white hover:opacity-90 shadow-md hover:shadow-lg",
+        default: "bg-gradient-to-r from-luxbid-gold-500 to-luxbid-dark-700 text-white hover:from-luxbid-gold-600 hover:to-luxbid-dark-800 shadow-md hover:shadow-lg transition-all duration-200",
         destructive:
           "bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg",
         outline:
-          "border-2 border-luxbid-gold-400 bg-white text-luxbid-dark-700 hover:bg-luxbid-gold-50 hover:border-luxbid-gold-500",
+          "border-2 border-luxbid-dark-600 bg-white text-luxbid-dark-800 hover:bg-luxbid-dark-50 hover:border-luxbid-dark-700 shadow-md",
         secondary:
           "bg-luxbid-dark-100 text-luxbid-dark-800 hover:bg-luxbid-dark-200",
         ghost: "text-luxbid-dark-600 hover:bg-luxbid-gold-50 hover:text-luxbid-gold-700",
