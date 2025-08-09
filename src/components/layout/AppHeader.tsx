@@ -60,14 +60,34 @@ export default function AppHeader(): ReactElement {
             {isAuthenticated ? (
               <button
                 onClick={() => signOut({ redirect: true })}
-                className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-luxbid-gold-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-luxbid-gold-400 bg-white text-luxbid-dark-700 hover:bg-luxbid-gold-50 hover:border-luxbid-gold-500 h-9 rounded-md px-4"
+                style={{
+                  backgroundColor: 'white',
+                  color: '#2D2D2D',
+                  fontWeight: 'bold',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: '2px solid #B8975A',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  fontSize: '14px'
+                }}
+                className="inline-flex items-center justify-center hover:opacity-90 transition-opacity"
               >
                 {t('nav.signOut')}
               </button>
             ) : (
               <button
                 onClick={() => signIn()}
-                className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-luxbid-gold-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-brand text-white hover:opacity-90 shadow-md hover:shadow-lg h-9 rounded-md px-4"
+                style={{
+                  backgroundColor: '#B8975A',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  fontSize: '14px'
+                }}
+                className="inline-flex items-center justify-center hover:opacity-90 transition-opacity"
               >
                 {t('nav.signIn')}
               </button>
