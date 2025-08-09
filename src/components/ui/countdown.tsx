@@ -1,6 +1,7 @@
-'use client'
+"use client"
 
 import { useState, useEffect } from 'react'
+import { useI18n } from '@/components/providers/I18nProvider'
 
 interface CountdownProps {
   endDate: Date
@@ -8,6 +9,7 @@ interface CountdownProps {
 }
 
 export function Countdown({ endDate, onEnd }: CountdownProps) {
+  const { t } = useI18n()
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -41,11 +43,7 @@ export function Countdown({ endDate, onEnd }: CountdownProps) {
   const isEnded = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0
 
   if (isEnded) {
-    return (
-      <div className="text-red-600 font-semibold">
-        Auction Ended
-      </div>
-    )
+    return <div className="text-red-600 font-semibold">—</div>
   }
 
   return (

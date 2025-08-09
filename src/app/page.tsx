@@ -1,62 +1,29 @@
+"use client"
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useI18n } from '@/components/providers/I18nProvider'
 
 export default function HomePage() {
+  const { t } = useI18n()
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600"></div>
-              <span className="text-xl font-bold text-gray-900">LuxBID</span>
-            </div>
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/listings" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Browse Items
-              </Link>
-              <Link href="/about" className="text-gray-600 hover:text-gray-900 transition-colors">
-                About
-              </Link>
-              <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Contact
-              </Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Link href="/login">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link href="/register">
-                <Button>Get Started</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Header is handled globally in AppHeader */}
 
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-            Luxury Auctions
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-              Reimagined
-            </span>
-          </h1>
-          <p className="text-lg text-gray-600 mb-8">
-            Discover the world&apos;s finest luxury watches, handbags, and jewelry through private offers.
-          </p>
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">{t('home.title')}</h1>
+          <p className="text-lg text-gray-600 mb-8">{t('home.subtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/listings">
               <Button size="lg" className="text-lg px-8 py-6">
-                Browse Auctions
+                {t('home.ctaBrowse')}
               </Button>
             </Link>
             <Link href="/register">
               <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                Start Selling
+                {t('home.ctaSell')}
               </Button>
             </Link>
           </div>
@@ -67,7 +34,7 @@ export default function HomePage() {
       <section className="py-20 px-4 bg-white">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Why Choose LuxBID?
+            {t('home.whyChoose')}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="text-center">
@@ -77,10 +44,8 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <CardTitle>Secure & Anonymous</CardTitle>
-                <CardDescription>
-                  Bid with confidence knowing your identity is protected until the deal is finalized.
-                </CardDescription>
+                <CardTitle>{t('feature.privateOffers.title')}</CardTitle>
+                <CardDescription>{t('feature.privateOffers.desc')}</CardDescription>
               </CardHeader>
             </Card>
             <Card className="text-center">
@@ -90,10 +55,8 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <CardTitle>Authenticity Guaranteed</CardTitle>
-                <CardDescription>
-                  Every item is verified by our expert team before being listed for auction.
-                </CardDescription>
+                <CardTitle>{t('feature.auth.title')}</CardTitle>
+                <CardDescription>{t('feature.auth.desc')}</CardDescription>
               </CardHeader>
             </Card>
             <Card className="text-center">
@@ -103,10 +66,8 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
-                <CardTitle>Transparent Fees</CardTitle>
-                <CardDescription>
-                  Clear commission structure with no hidden fees. You know exactly what you&apos;re paying.
-                </CardDescription>
+                <CardTitle>{t('feature.fees.title')}</CardTitle>
+                <CardDescription>{t('feature.fees.desc')}</CardDescription>
               </CardHeader>
             </Card>
           </div>
@@ -116,9 +77,7 @@ export default function HomePage() {
       {/* Categories Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Browse Categories
-          </h2>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">{t('nav.browse')}</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="group cursor-pointer hover:shadow-lg transition-shadow">
               <CardContent className="p-0">

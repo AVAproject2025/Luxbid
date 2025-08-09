@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { ImageUpload } from '@/components/ui/image-upload'
 import { useAuth } from '@/hooks/useAuth'
 import { Toast } from '@/components/ui/toast'
+import { useI18n } from '@/components/providers/I18nProvider'
 
 interface CreateListingForm {
   title: string
@@ -23,6 +24,7 @@ interface CreateListingForm {
 }
 
 export default function CreateListingPage() {
+  const { t } = useI18n()
   const router = useRouter()
   const { isAuthenticated, isLoading } = useAuth()
   const [mounted, setMounted] = useState(false)
@@ -47,14 +49,14 @@ export default function CreateListingPage() {
 
   useEffect(() => {
     if (mounted && !isLoading && !isAuthenticated) {
-      router.push('/login')
+          router.push('/login')
     }
   }, [mounted, isLoading, isAuthenticated, router])
 
   if (!mounted || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="text-center">
+         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
@@ -122,7 +124,7 @@ export default function CreateListingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
+      {/* Header (global) */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -149,16 +151,14 @@ export default function CreateListingPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Listing</h1>
-            <p className="text-gray-600">List your luxury item for sale with private offers</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('listings.create')}</h1>
+            <p className="text-gray-600">—</p>
           </div>
 
           <Card>
             <CardHeader>
               <CardTitle>Listing Details</CardTitle>
-              <CardDescription>
-                Provide detailed information about your luxury item
-              </CardDescription>
+              <CardDescription>—</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -198,7 +198,7 @@ export default function CreateListingPage() {
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
+                      Description *
                   </label>
                   <textarea
                     name="description"
@@ -277,7 +277,7 @@ export default function CreateListingPage() {
                 {/* Price */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Asking Price *
+                      Asking Price *
                   </label>
                   <Input
                     name="askingPrice"
@@ -294,7 +294,7 @@ export default function CreateListingPage() {
                 {/* Images */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Images
+                      Images
                   </label>
                   <ImageUpload
                     onImagesChange={handleImagesChange}
@@ -316,7 +316,7 @@ export default function CreateListingPage() {
                     disabled={loading}
                     className="px-8"
                   >
-                    {loading ? 'Creating...' : 'Create Listing'}
+                    {loading ? '...' : t('listings.create')}
                   </Button>
                 </div>
               </form>

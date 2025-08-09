@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/hooks/useAuth'
 import { formatPrice, formatDate } from '@/lib/utils'
+import { useI18n } from '@/components/providers/I18nProvider'
 import { 
   Package, 
   User, 
@@ -54,6 +55,7 @@ interface PageProps {
 
 export default function ListingDetailPage({ params }: PageProps) {
   const { session, isAuthenticated } = useAuth()
+  const { t } = useI18n()
   const [listing, setListing] = useState<Listing | null>(null)
   const [offers, setOffers] = useState<Offer[]>([])
   const [loading, setLoading] = useState(true)
@@ -157,7 +159,7 @@ export default function ListingDetailPage({ params }: PageProps) {
         <div className="container mx-auto">
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading listing...</p>
+            <p className="text-gray-600">Loading...</p>
           </div>
         </div>
       </div>
@@ -169,8 +171,8 @@ export default function ListingDetailPage({ params }: PageProps) {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
         <div className="container mx-auto">
           <div className="text-center py-20">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Listing Not Found</h1>
-            <p className="text-gray-600">The listing you&apos;re looking for doesn&apos;t exist.</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Not found</h1>
+            <p className="text-gray-600">—</p>
           </div>
         </div>
       </div>
@@ -207,69 +209,53 @@ export default function ListingDetailPage({ params }: PageProps) {
                   <Package className="w-5 h-5" />
                   {listing.title}
                 </CardTitle>
-                <CardDescription>
-                  Listed by {listing.seller.name} on {formatDate(new Date(listing.createdAt))}
-                </CardDescription>
+                  <CardDescription>
+                    {t('details.listedByOn')} {listing.seller.name} • {formatDate(new Date(listing.createdAt))}
+                  </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Category
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('details.category')}</label>
                     <p className="text-gray-900">{listing.category}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Condition
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('details.condition')}</label>
                     <p className="text-gray-900">{listing.condition}</p>
                   </div>
                   {listing.brand && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Brand
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('details.brand')}</label>
                       <p className="text-gray-900">{listing.brand}</p>
                     </div>
                   )}
                   {listing.model && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Model
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('details.model')}</label>
                       <p className="text-gray-900">{listing.model}</p>
                     </div>
                   )}
                   {listing.year && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Year
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('details.year')}</label>
                       <p className="text-gray-900">{listing.year}</p>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('details.description')}</label>
                   <p className="text-gray-900">{listing.description}</p>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-5 h-5 text-green-600" />
-                    <span className="text-2xl font-bold text-green-600">
-                      {formatPrice(listing.askingPrice)}
-                    </span>
+                    <span className="text-2xl font-bold text-green-600">{formatPrice(listing.askingPrice)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">
-                      {listing._count.offers} offers
-                    </span>
+                    <span className="text-sm text-gray-500">{listing._count.offers} {t('listings.offers')}</span>
                   </div>
                 </div>
               </CardContent>
@@ -281,17 +267,13 @@ export default function ListingDetailPage({ params }: PageProps) {
             {isAuthenticated && !isSeller && listing.status === 'ACTIVE' && !userOffer && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Make an Offer</CardTitle>
-                  <CardDescription>
-                    Submit a private offer for this item
-                  </CardDescription>
+                  <CardTitle>{t('offer.make')}</CardTitle>
+                  <CardDescription>—</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmitOffer} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Offer Amount *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('offer.amount')}</label>
                       <Input
                         type="number"
                         value={offerAmount}
@@ -303,9 +285,7 @@ export default function ListingDetailPage({ params }: PageProps) {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Message (Optional)
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('offer.message')}</label>
                       <Textarea
                         value={offerMessage}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setOfferMessage(e.target.value)}
@@ -318,7 +298,7 @@ export default function ListingDetailPage({ params }: PageProps) {
                       disabled={submittingOffer}
                       className="w-full"
                     >
-                      {submittingOffer ? 'Submitting...' : 'Submit Offer'}
+                      {submittingOffer ? '...' : t('offer.submit')}
                     </Button>
                   </form>
                 </CardContent>
@@ -327,12 +307,10 @@ export default function ListingDetailPage({ params }: PageProps) {
 
             {isSeller && offers.length > 0 && (
               <Card>
-                <CardHeader>
-                  <CardTitle>Offers Received</CardTitle>
-                  <CardDescription>
-                    {offers.length} offer{offers.length !== 1 ? 's' : ''} received
-                  </CardDescription>
-                </CardHeader>
+                  <CardHeader>
+                    <CardTitle>{t('offer.received')}</CardTitle>
+                    <CardDescription>—</CardDescription>
+                  </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {offers.map((offer) => (
@@ -370,13 +348,11 @@ export default function ListingDetailPage({ params }: PageProps) {
                               size="sm"
                               onClick={() => handleAcceptOffer(offer.id)}
                             >
-                              Accept Offer
+                              {t('offer.accept')}
                             </Button>
                           )}
                           {offer.status === 'ACCEPTED' && (
-                            <span className="text-sm font-medium text-green-600">
-                              Accepted
-                            </span>
+                            <span className="text-sm font-medium text-green-600">{t('offer.accepted')}</span>
                           )}
                         </div>
                       </div>
@@ -415,12 +391,8 @@ export default function ListingDetailPage({ params }: PageProps) {
                       <span className="text-xs text-gray-500">
                         {formatDate(new Date(userOffer.createdAt))}
                       </span>
-                      <span className={`text-sm font-medium ${
-                        userOffer.status === 'ACCEPTED'
-                          ? 'text-green-600'
-                          : 'text-yellow-600'
-                      }`}>
-                        {userOffer.status === 'ACCEPTED' ? 'Accepted' : 'Pending'}
+                      <span className={`text-sm font-medium ${userOffer.status === 'ACCEPTED' ? 'text-green-600' : 'text-yellow-600'}`}>
+                        {userOffer.status === 'ACCEPTED' ? t('offer.accepted') : t('offer.pending')}
                       </span>
                     </div>
                   </div>

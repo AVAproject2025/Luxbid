@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, ArrowLeft, Package } from 'lucide-react'
 import Link from 'next/link'
+import { useI18n } from '@/components/providers/I18nProvider'
 
 function PaymentSuccessContent() {
+  const { t } = useI18n()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(true)
 
@@ -25,7 +27,7 @@ function PaymentSuccessContent() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Processing your payment...</p>
+          <p className="text-gray-600">Processing...</p>
         </div>
       </div>
     )
@@ -33,28 +35,7 @@ function PaymentSuccessContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600"></div>
-              <span className="text-xl font-bold text-gray-900">LuxBID</span>
-            </div>
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/listings" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Browse Items
-              </Link>
-              <Link href="/dashboard" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/profile" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Profile
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      {/* Header is global */}
 
       {/* Success Content */}
       <div className="container mx-auto px-4 py-12">
@@ -68,7 +49,7 @@ function PaymentSuccessContent() {
                 Payment Successful!
               </h1>
               <p className="text-gray-600 mb-6">
-                Your payment has been processed successfully. You&apos;ll receive a confirmation email shortly.
+                —
               </p>
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <p className="text-green-800">
@@ -87,22 +68,22 @@ function PaymentSuccessContent() {
             <CardContent className="space-y-6">
               {/* Order Details */}
               <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold mb-4">Order Details</h3>
+                 <h3 className="text-lg font-semibold mb-4">Order Details</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Item:</span>
+                     <span className="text-gray-600">Item:</span>
                     <span className="font-medium">Luxury Watch</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Price:</span>
+                     <span className="text-gray-600">Price:</span>
                     <span className="font-medium">${searchParams.get('amount') || '0'}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Commission:</span>
+                     <span className="text-gray-600">Commission:</span>
                     <span className="font-medium">5%</span>
                   </div>
                   <div className="flex items-center justify-between border-t pt-3">
-                    <span className="text-lg font-semibold">Total:</span>
+                     <span className="text-lg font-semibold">Total:</span>
                     <span className="text-lg font-semibold text-green-600">
                       ${searchParams.get('amount') || '0'}
                     </span>
@@ -112,12 +93,12 @@ function PaymentSuccessContent() {
 
               {/* Next Steps */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-900 mb-2">What&apos;s Next?</h4>
+                 <h4 className="font-semibold text-blue-900 mb-2">What&apos;s Next?</h4>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• You&apos;ll receive an email confirmation</li>
-                  <li>• The seller will be notified of your purchase</li>
-                  <li>• Contact details will be shared after commission payment</li>
-                  <li>• Arrange shipping and delivery with the seller</li>
+                   <li>• Email confirmation</li>
+                   <li>• Seller notified</li>
+                   <li>• Contacts shared after commission</li>
+                   <li>• Arrange shipping with seller</li>
                 </ul>
               </div>
 

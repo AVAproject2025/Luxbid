@@ -11,6 +11,7 @@ import {
   Download,
   BarChart3
 } from 'lucide-react'
+import { useI18n } from '@/components/providers/I18nProvider'
 
 interface ReportData {
   totalRevenue: number
@@ -37,6 +38,7 @@ interface ReportData {
 }
 
 export default function ReportsPage() {
+  const { t } = useI18n()
   const [reportData, setReportData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [dateRange, setDateRange] = useState('30')
@@ -84,7 +86,7 @@ export default function ReportsPage() {
         <div className="container mx-auto">
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading reports...</p>
+            <p className="text-gray-600">Loading...</p>
           </div>
         </div>
       </div>
@@ -108,7 +110,7 @@ export default function ReportsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Reports & Analytics</h1>
-          <p className="text-gray-600">Platform performance and insights</p>
+          <p className="text-gray-600">—</p>
         </div>
 
         {/* Date Range Filter */}

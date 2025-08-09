@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { formatPrice } from '@/lib/utils'
 import { Package, User, DollarSign, Eye } from 'lucide-react'
 import Link from 'next/link'
+import { useI18n } from '@/components/providers/I18nProvider'
 
 interface Listing {
   id: string
@@ -30,6 +31,7 @@ interface Listing {
 }
 
 export default function ListingsPage() {
+  const { t } = useI18n()
   const [listings, setListings] = useState<Listing[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -66,48 +68,22 @@ export default function ListingsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600"></div>
-              <span className="text-xl font-bold text-gray-900">LuxBID</span>
-            </div>
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/listings" className="text-gray-900 font-medium">
-                Browse Items
-              </Link>
-              <Link href="/dashboard" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/profile" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Profile
-              </Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Link href="/listings/create">
-                <Button>List Item</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Header handled globally */}
 
       {/* Listings Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Luxury Items</h1>
-          <p className="text-gray-600">Discover exclusive luxury watches, handbags, and jewelry</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('listings.title')}</h1>
+          <p className="text-gray-600">{t('listings.subtitle')}</p>
         </div>
 
         {listings.length === 0 ? (
           <div className="text-center py-12">
             <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No listings found</h3>
-            <p className="text-gray-600">Be the first to list a luxury item!</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('listings.none')}</h3>
+            <p className="text-gray-600">{t('listings.firstToList')}</p>
             <Link href="/listings/create">
-              <Button className="mt-4">Create Listing</Button>
+              <Button className="mt-4">{t('listings.create')}</Button>
             </Link>
           </div>
         ) : (
@@ -157,13 +133,11 @@ export default function ListingsPage() {
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
-                      {listing._count.offers} offers
-                    </span>
+                    <span className="text-xs text-gray-500">{listing._count.offers} {t('listings.offers')}</span>
                     <Link href={`/listings/${listing.id}`}>
                       <Button size="sm" variant="outline">
                         <Eye className="w-4 h-4 mr-1" />
-                        View Details
+                        {t('listings.viewDetails')}
                       </Button>
                     </Link>
                   </div>

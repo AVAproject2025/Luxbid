@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { useAuth } from '@/hooks/useAuth'
 import { formatDate, formatDateTime } from '@/lib/utils'
 import { MessageSquare, Send, User, Package } from 'lucide-react'
+import { useI18n } from '@/components/providers/I18nProvider'
 
 interface Message {
   id: string
@@ -32,6 +33,7 @@ interface Conversation {
 }
 
 export default function MessagesPage() {
+  const { t } = useI18n()
   const router = useRouter()
   const { session, isAuthenticated } = useAuth()
   const [conversations, setConversations] = useState<Conversation[]>([])
@@ -124,7 +126,7 @@ export default function MessagesPage() {
         <div className="container mx-auto">
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading messages...</p>
+            <p className="text-gray-600">Loading...</p>
           </div>
         </div>
       </div>
@@ -136,7 +138,7 @@ export default function MessagesPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Messages</h1>
-          <p className="text-gray-600">Manage your conversations and inquiries</p>
+          <p className="text-gray-600">—</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

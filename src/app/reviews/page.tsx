@@ -11,6 +11,7 @@ import {
   ThumbsUp,
   ThumbsDown
 } from 'lucide-react'
+import { useI18n } from '@/components/providers/I18nProvider'
 
 interface Review {
   id: string
@@ -28,6 +29,7 @@ interface Review {
 }
 
 export default function ReviewsPage() {
+  const { t } = useI18n()
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'positive' | 'negative'>('all')
@@ -66,7 +68,7 @@ export default function ReviewsPage() {
         <div className="container mx-auto">
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading reviews...</p>
+            <p className="text-gray-600">Loading...</p>
           </div>
         </div>
       </div>
@@ -78,7 +80,7 @@ export default function ReviewsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Reviews & Ratings</h1>
-          <p className="text-gray-600">Customer feedback and ratings</p>
+          <p className="text-gray-600">—</p>
         </div>
 
         {/* Stats */}
