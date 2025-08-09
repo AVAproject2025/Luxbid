@@ -46,7 +46,7 @@ function PaymentSuccessContent() {
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <h1 className="text-2xl font-bold text-green-600 mb-4">
-                Payment Successful!
+                {t('payment.success.title')}
               </h1>
               <p className="text-gray-600 mb-6">
                 —

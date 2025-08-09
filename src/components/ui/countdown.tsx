@@ -43,7 +43,7 @@ export function Countdown({ endDate, onEnd }: CountdownProps) {
   const isEnded = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0
 
   if (isEnded) {
-    return <div className="text-red-600 font-semibold">—</div>
+    return <div className="text-red-600 font-semibold">{t('common.ended')}</div>
   }
 
   return (

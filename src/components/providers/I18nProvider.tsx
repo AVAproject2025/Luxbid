@@ -194,12 +194,10 @@ const dictionaries: Record<SupportedLang, Dictionary> = {
     'payment.success.date': 'Payment date',
     'payment.success.status': 'Payment status',
     'payment.success.next': 'What\'s next?',
-    'payment.success.nextSteps': [
-      'Email confirmation',
-      'Seller notified',
-      'Contacts shared after commission',
-      'Arrange shipping with seller'
-    ],
+    'payment.success.step1': 'Email confirmation',
+    'payment.success.step2': 'Seller notified',
+    'payment.success.step3': 'Contacts shared after commission',
+    'payment.success.step4': 'Arrange shipping with seller',
     'payment.success.dashboard': 'Go to Dashboard',
     'payment.success.browse': 'Browse More Items',
 
