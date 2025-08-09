@@ -155,7 +155,7 @@ export default function ListingDetailPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white p-4">
         <div className="container mx-auto">
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -168,7 +168,7 @@ export default function ListingDetailPage({ params }: PageProps) {
 
   if (!listing) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white p-4">
         <div className="container mx-auto">
           <div className="text-center py-20">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Not found</h1>
@@ -184,7 +184,7 @@ export default function ListingDetailPage({ params }: PageProps) {
   const userOffer = offers.find(offer => offer.buyer.id === session?.user?.id)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Listing Details */}

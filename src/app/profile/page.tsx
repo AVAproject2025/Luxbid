@@ -64,7 +64,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">{t('common.loading')}</div>
         </div>
@@ -74,7 +74,7 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-red-600">{t('error.profileNotFound')}</div>
         </div>
@@ -83,7 +83,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('profile.title')}</h1>

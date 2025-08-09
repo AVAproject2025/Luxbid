@@ -32,10 +32,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto h-12 w-12 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center mb-4">
+          <div className="mx-auto h-12 w-12 rounded-full bg-gradient-brand flex items-center justify-center mb-4">
             <span className="text-white font-bold text-xl">L</span>
           </div>
           <CardTitle className="text-2xl">{t('dashboard.welcomeBack')}</CardTitle>

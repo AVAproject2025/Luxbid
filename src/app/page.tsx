@@ -134,12 +134,15 @@ export default function HomePage() {
         <div className="container mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600"></div>
-                <span className="text-xl font-bold">LuxBID</span>
+              <div className="flex items-center space-x-3 mb-4">
+                <img 
+                  src="/luxbid-logo.svg" 
+                  alt="LuxBID" 
+                  className="h-8 w-auto filter brightness-0 invert"
+                />
               </div>
               <p className="text-gray-400">
-                The premier platform for luxury auctions with guaranteed authenticity and secure bidding.
+                Platforma premium pentru oferte private la obiecte de lux cu autenticitate garantată.
               </p>
             </div>
             <div>

@@ -55,7 +55,7 @@ export default function CreateListingPage() {
 
   if (!mounted || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white flex items-center justify-center">
          <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
@@ -123,13 +123,13 @@ export default function CreateListingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white">
       {/* Header (global) */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600"></div>
+              <div className="h-8 w-8 rounded-full bg-gradient-brand"></div>
               <span className="text-xl font-bold text-gray-900">LuxBID</span>
             </div>
             <nav className="hidden md:flex items-center space-x-8">

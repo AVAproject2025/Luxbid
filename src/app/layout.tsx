@@ -31,7 +31,7 @@ export default function RootLayout({
       <body className={`${geist.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider>
           <I18nProvider>
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+            <div className="min-h-screen bg-gradient-to-br from-luxbid-gold-50 to-white">
               <AppHeader />
               <main>
                 {children}
