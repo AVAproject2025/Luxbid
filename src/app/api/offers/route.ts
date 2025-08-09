@@ -30,14 +30,11 @@ export async function GET(request: NextRequest) {
       where.listingId = listingId
     }
 
-    // Users can only see their own offers
-    if (session.user.role === 'BUYER') {
-      where.buyerId = session.user.id
-    } else if (session.user.role === 'SELLER') {
-      where.listing = {
-        sellerId: session.user.id
-      }
-    }
+    // Users can see offers they made or received on their listings
+    where.OR = [
+      { buyerId: session.user.id }, // Offers user made
+      { listing: { sellerId: session.user.id } } // Offers on user's listings
+    ]
 
     const offers = await prisma.offer.findMany({
       where,
